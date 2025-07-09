@@ -1,31 +1,33 @@
 <template>
-  <div class="container">
-    <h2>Qualificação de Cliente - Gyra+</h2>
-    <form @submit.prevent="analisarCredito">
-      <div>
-        <label>Nome:</label>
-        <input v-model="nome" required />
-      </div>
-      <div>
-        <label>CPF:</label>
-        <input v-model="cpf" required />
-      </div>
-      <div>
-        <label>Renda:</label>
-        <input v-model.number="renda" type="number" required />
-      </div>
-      <div>
-        <label>Valor do Pedido:</label>
-        <input v-model.number="valor_pedido" type="number" required />
-      </div>
-      <button type="submit">Analisar Crédito</button>
-    </form>
+  <div class="bgimg">
+    <div class="container">
+      <h2>Qualificação de Cliente - Gyra+</h2>
+      <form @submit.prevent="analisarCredito">
+        <div>
+          <label>Nome:</label>
+          <input v-model="nome" required />
+        </div>
+        <div>
+          <label>CPF:</label>
+          <input v-model="cpf" required />
+        </div>
+        <div>
+          <label>Renda:</label>
+          <input v-model.number="renda" type="number" min="0" onkeypress="return event.charCode != 45" required />
+        </div>
+        <div>
+          <label>Valor do Pedido:</label>
+          <input v-model.number="valor_pedido" type="number" min="1" required />
+        </div>
+        <button type="submit">Analisar Crédito</button>
+      </form>
 
-    <div v-if="resultado">
-      <h3>Resultado:</h3>
-      <p><strong>Status:</strong> {{ resultado.status }}</p>
-      <p v-if="resultado.limite_aprovado"><strong>Limite aprovado:</strong> R$ {{ resultado.limite_aprovado }}</p>
-      <p v-if="resultado.mensagem"><strong>Mensagem:</strong> {{ resultado.mensagem }}</p>
+      <div v-if="resultado">
+        <h3>Resultado:</h3>
+        <p><strong>Status:</strong> {{ resultado.status }}</p>
+        <p v-if="resultado.limite_aprovado"><strong>Limite aprovado:</strong> R$ {{ resultado.limite_aprovado }}</p>
+        <p v-if="resultado.mensagem"><strong>Mensagem:</strong> {{ resultado.mensagem }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -68,7 +70,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.bgimg {
+  background-image: url('@/assets/herring-gull-2494975_960_720-637017194.jpg'); /* ou um URL externo */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  padding: 40px;
+  color: #000; /* se a imagem for escura */
+}
 .container {
   max-width: 400px;
   margin: 30px auto;
