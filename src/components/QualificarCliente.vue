@@ -8,8 +8,8 @@
           <input v-model="nome" required />
         </div>
         <div>
-          <label>CPF:</label>
-          <input v-model="cpf" required />
+          <label>CNPJ:</label>
+          <input v-model="cnpj" required />
         </div>
         <div>
           <label>Renda:</label>
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       nome: '',
-      cpf: '',
+      cnpj: '',
       renda: null,
       valor_pedido: null,
       resultado: null
@@ -72,7 +72,7 @@ export default {
 
 <style scoped>
 .bgimg {
-  background-image: url('@/assets/herring-gull-2494975_960_720-637017194.jpg'); /* ou um URL externo */
+  background-image: url('@/assets/GP-Corp-Colocando-o-mundo-em-movimento-3787986820.png'); /* ou um URL externo */
   background-size: cover;
   background-position: center;
   min-height: 100vh;
