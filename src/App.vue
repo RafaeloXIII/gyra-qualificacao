@@ -6,7 +6,7 @@
 
 <style scoped>
 .background {
-  background-image: url('@/assets/herring-gull-2494975_960_720-637017194.jpg');
+  background-image: url('@/assets/Gaivota blindada na praia deserta.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

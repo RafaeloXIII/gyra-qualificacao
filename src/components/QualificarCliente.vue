@@ -13,10 +13,18 @@
 
     <div v-if="error" class="error">{{ error }}</div>
 
-    <div v-if="report" class="resultado">
-      <h3>Resultado do Relatório</h3>
-      <pre>{{ report }}</pre>
+    <div v-if="mainStatus">
+      <h3>Status Geral: {{ mainStatus }}</h3>
     </div>
+    <div v-if="policySummaries && policySummaries.length">
+      <h3>Regras da Política:</h3>
+      <ul>
+        <li v-for="(rule, index) in policySummaries" :key="index">
+          📌 <strong>{{ rule.description }}</strong> — <em>{{ rule.status }}</em>
+        </li>
+      </ul>
+    </div>
+    
   </div>
 </template>
 
@@ -24,14 +32,16 @@
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      cnpj: '',
-      report: null,
-      loading: false,
-      error: ''
-    };
-  },
+data() {
+  return {
+    cnpj: '',              
+    loading: false,        
+    error: '',             
+    report: null,          
+    mainStatus: '',        
+    policySummaries: []    
+  };
+},
 methods: {
   async handleCNPJSearch() {
     this.loading = true;
@@ -59,8 +69,33 @@ methods: {
         }
       );
 
-      console.log('📊 Report data:', fullReport.data);
+      console.log("📦 Relatório completo:", fullReport.data);
       this.report = fullReport.data;
+      // 👇 Pega o status principal
+      this.mainStatus = fullReport.data.status?.value || 'Sem status';
+          // ✅ Extrai todas as regras da política a partir do JSON aninhado
+      const sections = fullReport.data.sections || [];
+      const extractedRules = [];
+
+      sections.forEach(section => {
+        (section.sectionDetails || []).forEach(detail => {
+          const values = detail.values || {};
+          (values.policyRuleGroupResults || []).forEach(group => {
+            (group.policyRuleResultJoins || []).forEach(join => {
+              (join.policyRuleResults || []).forEach(rule => {
+                if (rule.status?.key === 'DENIED' || rule.status?.key === 'ALERT'){
+                  extractedRules.push({
+                    description: rule.descriptions,
+                    status: rule.status?.value
+                  });
+                }
+              });
+            });
+          });
+        });
+      });
+
+    this.policySummaries = extractedRules;
     } catch (err) {
       console.error('❌ Error in handleCNPJSearch:', err);
       this.error = err.response?.data?.error || err.message;
