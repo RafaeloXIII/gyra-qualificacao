@@ -1,33 +1,21 @@
 <template>
-  <div class="bgimg">
-    <div class="container">
-      <h2>Qualificação de Cliente - Gyra+</h2>
-      <form @submit.prevent="analisarCredito">
-        <div>
-          <label>Nome:</label>
-          <input v-model="nome" required />
-        </div>
-        <div>
-          <label>CNPJ:</label>
-          <input v-model="cnpj" required />
-        </div>
-        <div>
-          <label>Renda:</label>
-          <input v-model.number="renda" type="number" min="0" onkeypress="return event.charCode != 45" required />
-        </div>
-        <div>
-          <label>Valor do Pedido:</label>
-          <input v-model.number="valor_pedido" type="number" min="1" required />
-        </div>
-        <button type="submit">Analisar Crédito</button>
-      </form>
+  <div class="qualificar-container">
+    <h2>Consulta de Cliente (GYRA+)</h2>
 
-      <div v-if="resultado">
-        <h3>Resultado:</h3>
-        <p><strong>Status:</strong> {{ resultado.status }}</p>
-        <p v-if="resultado.limite_aprovado"><strong>Limite aprovado:</strong> R$ {{ resultado.limite_aprovado }}</p>
-        <p v-if="resultado.mensagem"><strong>Mensagem:</strong> {{ resultado.mensagem }}</p>
-      </div>
+    <form @submit.prevent="handleCNPJSearch">
+      <label for="cnpj">CNPJ:</label>
+      <input v-model="cnpj" id="cnpj" placeholder="Digite o CNPJ" required />
+
+      <button type="submit" :disabled="loading">
+        {{ loading ? "Consultando..." : "Consultar" }}
+      </button>
+    </form>
+
+    <div v-if="error" class="error">{{ error }}</div>
+
+    <div v-if="report" class="resultado">
+      <h3>Resultado do Relatório</h3>
+      <pre>{{ report }}</pre>
     </div>
   </div>
 </template>
@@ -38,64 +26,96 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      nome: '',
       cnpj: '',
-      renda: null,
-      valor_pedido: null,
-      resultado: null
-    }
+      report: null,
+      loading: false,
+      error: ''
+    };
   },
-  methods: {
-    async analisarCredito() {
-      // Substitua a URL e header abaixo conforme sua documentação e autenticação
-      const url = 'https://api.gyramais.com/v1/credit/analysis';
-      try {
-        const response = await axios.post(url, {
-          nome: this.nome,
-          cpf: this.cpf,
-          renda: this.renda,
-          valor_pedido: this.valor_pedido
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            // 'Authorization': 'Bearer SEU_TOKEN_AQUI', // se for necessário
-          }
-        });
-        this.resultado = response.data;
-      } catch (err) {
-        this.resultado = { status: 'erro', mensagem: err.response?.data?.mensagem || 'Erro na análise.' };
-      }
+methods: {
+  async handleCNPJSearch() {
+    this.loading = true;
+    this.error = '';
+    this.report = null;
+
+    try {
+      const tokenRes = await axios.post('http://localhost:3001/api/token');
+      console.log('🟢 Token received:', tokenRes.data);
+      const token = tokenRes.data.token;
+
+      const reportRes = await axios.post('http://localhost:3001/api/report', {
+        token,
+        cnpj: this.cnpj,
+        policyId: process.env.VUE_APP_GYRA_POLICY_ID
+      });
+
+      console.log('📄 Report created:', reportRes.data);
+      const reportId = reportRes.data.id || reportRes.data.reportId;
+
+      const fullReport = await axios.get(
+        `http://localhost:3001/api/report/${reportId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      console.log('📊 Report data:', fullReport.data);
+      this.report = fullReport.data;
+    } catch (err) {
+      console.error('❌ Error in handleCNPJSearch:', err);
+      this.error = err.response?.data?.error || err.message;
+    } finally {
+      this.loading = false;
     }
   }
 }
+};
+
 </script>
 
 <style scoped>
-.bgimg {
-  background-image: url('@/assets/GP-Corp-Colocando-o-mundo-em-movimento-3787986820.png'); /* ou um URL externo */
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  padding: 40px;
-  color: #000; /* se a imagem for escura */
+.qualificar-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
 }
-.container {
-  max-width: 400px;
-  margin: 30px auto;
-  padding: 2em;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-}
-input, button {
-  margin: 0.3em 0;
+
+input {
+  display: block;
   width: 100%;
-  padding: 0.7em;
+  margin-bottom: 12px;
+  padding: 8px;
+  font-size: 16px;
 }
+
 button {
-  background: #36a2eb;
-  color: #fff;
+  padding: 10px 18px;
+  font-size: 16px;
+  background-color: #0072ff;
+  color: white;
   border: none;
-  border-radius: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:disabled {
+  background-color: #aaa;
+}
+
+.error {
+  margin-top: 12px;
+  color: red;
+}
+
+.resultado {
+  margin-top: 24px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
 }
 </style>
