@@ -163,7 +163,6 @@ input {
   background-color: #0d1b2a; /* azul escuro */
   padding: 40px;
   border-radius: 12px;
-  font-family: Arial, sans-serif;
 }
 
 .qualificar-container h2,
@@ -173,7 +172,7 @@ input {
 
 .qualificar-container li,
 .qualificar-container p {
-  color: #8ecae6; /* azul claro */
+  color: #8ecae6; 
 }
 
 button {
