@@ -11,10 +11,22 @@
       </button>
     </form>
 
+    <div class="consulta-info">
+      Os resultados das consultas são baseados nas políticas de crédito da GP e nos dados dos principais bureaus de crédito e inteligência artificial do mercado.
+    </div>
+
     <div v-if="error" class="error">{{ error }}</div>
 
     <div v-if="mainStatus">
-      <h3>Status Geral: {{ mainStatus }}</h3>
+      <h3>Status Geral: {{ translateStatus(mainStatus) }}</h3>
+    </div>
+    <div v-if="riskInfo.length">
+      <strong>Detalhes:</strong>
+      <ul>
+        <li v-for="(risk, index) in riskInfo" :key="index">
+          👉 {{ risk }}
+        </li>
+      </ul>
     </div>
     <div v-if="policySummaries && policySummaries.length">
       <h3>Regras da Política:</h3>
@@ -24,7 +36,10 @@
         </li>
       </ul>
     </div>
-    
+      <footer class="footer">
+      © 2025 GP CORP BR - Todos os direitos reservados <br />
+      Versão 1.0.2025 - Uso exclusivo GP Corp BR - Desenvolvido pelo Departamento de TI
+    </footer>
   </div>
 </template>
 
@@ -39,10 +54,25 @@ data() {
     error: '',             
     report: null,          
     mainStatus: '',        
-    policySummaries: []    
+    policySummaries: [],
+    riskInfo: []
   };
 },
 methods: {
+
+    translateStatus(status) {
+    const map = {
+      APPROVED: 'Aprovado',
+      REJECTED: 'Rejeitado',
+      ALERT: 'Alerta',
+      DENIED: 'Negado',
+      PENDING: 'Pendente',
+      NOT_EXECUTED: 'Não Processado',
+      '': 'Desconhecido'
+    };
+    return map[status?.toUpperCase()] || status;
+  },
+
   async handleCNPJSearch() {
     this.loading = true;
     this.error = '';
@@ -76,10 +106,16 @@ methods: {
           // ✅ Extrai todas as regras da política a partir do JSON aninhado
       const sections = fullReport.data.sections || [];
       const extractedRules = [];
+      let risks = new Set();
 
       sections.forEach(section => {
         (section.sectionDetails || []).forEach(detail => {
           const values = detail.values || {};
+
+          if (values.risk) {
+            risks.add(values.risk);
+          }
+
           (values.policyRuleGroupResults || []).forEach(group => {
             (group.policyRuleResultJoins || []).forEach(join => {
               (join.policyRuleResults || []).forEach(rule => {
@@ -95,6 +131,7 @@ methods: {
         });
       });
 
+    this.riskInfo = Array.from(risks);
     this.policySummaries = extractedRules;
     } catch (err) {
       console.error('❌ Error in handleCNPJSearch:', err);
@@ -109,14 +146,6 @@ methods: {
 </script>
 
 <style scoped>
-.qualificar-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 24px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  font-family: Arial, sans-serif;
-}
 
 input {
   display: block;
@@ -124,6 +153,27 @@ input {
   margin-bottom: 12px;
   padding: 8px;
   font-size: 16px;
+}
+
+.qualificar-container {
+  max-width: 600px;
+  color: #8ecae6;
+  margin: auto;
+  padding: 24px;
+  background-color: #0d1b2a; /* azul escuro */
+  padding: 40px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+}
+
+.qualificar-container h2,
+.qualificar-container h3 {
+  color: white;
+}
+
+.qualificar-container li,
+.qualificar-container p {
+  color: #8ecae6; /* azul claro */
 }
 
 button {
@@ -152,5 +202,21 @@ button:disabled {
   border-radius: 8px;
   font-family: monospace;
   font-size: 14px;
+}
+
+.consulta-info {
+  margin-top: 12px;
+  background-color: #1b263b;
+  color: #8ecae6;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.footer {
+  margin-top: 40px;
+  font-size: 13px;
+  text-align: center;
+  color: #8ecae6;
 }
 </style>
