@@ -1,24 +1,19 @@
 <template>
   <div class="home-container">
-    <h1>👋 Bem-vindo à Plataforma de Análise de Crédito GP</h1>
+    <h1>Motor de Crédito 2025</h1>
     <p class="subtitle">
-      Escolha abaixo uma das opções para continuar:
+      Tempo médio de 30 segundos:
     </p>
 
     <div class="link-grid">
       <router-link to="/motorcredito/credito" class="link-box">
-        💳 <span>Consulta de Crédito</span>
+        📊 <span>Report - Análise de Crédito</span>
       </router-link>
 
       <router-link to="/motorcredito/marketing" class="link-box">
-        📈 <span>Marketing</span>
+        📣 <span>Área do Marketing</span>
       </router-link>
     </div>
-
-    <footer class="footer">
-      © 2025 GP CORP BR - Todos os direitos reservados <br />
-      Versão 1.0.2025 • Desenvolvido pelo Departamento de TI
-    </footer>
   </div>
 </template>
 
@@ -33,20 +28,21 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 40px 24px;
-  background-color: #0d1b2a;
+  background-color: #131a2a;
   color: #8ecae6;
   text-align: center;
   border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 45px;
   color: white;
   margin-bottom: 16px;
 }
 
 .subtitle {
+  color: white;
   font-size: 18px;
   margin-bottom: 32px;
 }
@@ -82,7 +78,8 @@ h1 {
 
 .footer {
   margin-top: 48px;
-  font-size: 13px;
-  color: #8ecae6;
+  font-size: 15px;
+  color: white;
+  font-family: 'Roboto', sans-serif;
 }
 </style>

@@ -44,7 +44,7 @@ export default {
 input {
   padding: 10px;
   font-size: 18px;
-  width: 100%;
+  width: 92%;
   margin-bottom: 12px;
 }
 button {
