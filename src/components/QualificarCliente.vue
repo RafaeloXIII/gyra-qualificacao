@@ -1,9 +1,8 @@
 <template>
-  <div class="qualificar-container">
-    <h2>Consulta de Cliente (GYRA+)</h2>
+  <div class="home-container">
+    <h2>Consulta de Cliente</h2>
 
     <form @submit.prevent="handleCNPJSearch">
-      <label for="cnpj">CNPJ:</label>
       <input v-model="cnpj" id="cnpj" placeholder="Digite o CNPJ" required />
 
       <button type="submit" :disabled="loading">
@@ -24,7 +23,7 @@
       <strong>Detalhes:</strong>
       <ul>
         <li v-for="(risk, index) in riskInfo" :key="index">
-          👉 {{ risk }}
+           {{ risk }}
         </li>
       </ul>
     </div>
@@ -32,14 +31,10 @@
       <h3>Regras da Política:</h3>
       <ul>
         <li v-for="(rule, index) in policySummaries" :key="index">
-          📌 <strong>{{ rule.description }}</strong> — <em>{{ rule.status }}</em>
+          <strong>{{ cleanDescription(rule.description) }}</strong> — <em>{{ rule.status }}</em>
         </li>
       </ul>
     </div>
-      <footer class="footer">
-      © 2025 GP CORP BR - Todos os direitos reservados <br />
-      Versão 1.0.2025 - Uso exclusivo GP Corp BR - Desenvolvido pelo Departamento de TI
-    </footer>
   </div>
 </template>
 
@@ -60,7 +55,7 @@ data() {
 },
 methods: {
 
-    translateStatus(status) {
+  translateStatus(status) {
     const map = {
       APPROVED: 'Aprovado',
       REJECTED: 'Rejeitado',
@@ -73,17 +68,21 @@ methods: {
     return map[status?.toUpperCase()] || status;
   },
 
+  cleanDescription(text) {
+  if (!text) return '';
+  return text.replace(/\{\{.*?\}\}/g, '').trim();
+  },
   async handleCNPJSearch() {
     this.loading = true;
     this.error = '';
     this.report = null;
 
     try {
-      const tokenRes = await axios.post('http://localhost:3001/api/token');
+      const tokenRes = await axios.post('http://192.168.87.87:3001/api/token');
       console.log('🟢 Token received:', tokenRes.data);
       const token = tokenRes.data.token;
 
-      const reportRes = await axios.post('http://localhost:3001/api/report', {
+      const reportRes = await axios.post('http://192.168.87.87:3001/api/report', {
         token,
         cnpj: this.cnpj,
         policyId: process.env.VUE_APP_GYRA_POLICY_ID
@@ -93,7 +92,7 @@ methods: {
       const reportId = reportRes.data.id || reportRes.data.reportId;
 
       const fullReport = await axios.get(
-        `http://localhost:3001/api/report/${reportId}`,
+        `http://192.168.87.87:3001/api/report/${reportId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -149,13 +148,14 @@ methods: {
 
 input {
   display: block;
-  width: 100%;
+  width: 97%;
   margin-bottom: 12px;
   padding: 8px;
   font-size: 16px;
+  border-radius: 6px;
 }
 
-.qualificar-container {
+.home-container {
   max-width: 600px;
   color: #8ecae6;
   margin: auto;
@@ -165,13 +165,18 @@ input {
   border-radius: 12px;
 }
 
-.qualificar-container h2,
-.qualificar-container h3 {
+.home-container h2 {
+  font-size: 45px;
   color: white;
 }
 
-.qualificar-container li,
-.qualificar-container p {
+.home-container h3 {
+  font-size: 25px;
+  color: white;
+}
+
+.home-container li,
+.home-container p {
   color: #8ecae6; 
 }
 

@@ -1,7 +1,28 @@
 <template>
-  <div id="app" class="background">
-    <InfoModal />
-    <router-view />
+  <div id="app" class="layout-wrapper">
+    <aside class="sidebar">
+      <router-link to="/motorcredito">
+        <img src="@/assets/gp_imports_logo.png" alt="Logo" class="logo" />
+      </router-link>
+
+      <button class="info-button" @click="showInfo = true">
+        <img src="@/assets/Info-icon.png" alt="Info" class="info-icon" />
+      </button>
+      <InfoModal :visible="showInfo" @close="showInfo = false" />
+    </aside>
+
+    <div class="main-section">
+      <main class="main-content">
+        <router-view />
+      </main>
+      <footer class="footer">
+        © 2025 GP CORP BR - Todos os direitos reservados <br />
+        Versão 1.0.2025 - Uso exclusivo GP Corp BR - Desenvolvido pelo Departamento de TI
+      </footer>
+    </div>
+
+    <!-- InfoModal -->
+    <InfoModal v-if="showInfo" @close="showInfo = false" />
   </div>
 </template>
 
@@ -9,29 +30,77 @@
 import InfoModal from './components/InfoModal.vue';
 
 export default {
-  name: 'App',
   components: {
     InfoModal
+  },
+  data() {
+    return {
+      showInfo: false
+    };
   }
 };
 </script>
 
 <style>
 body {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
+  background-image: linear-gradient(to right, #21364b, #13284a);
 }
-</style>
 
-<style scoped>
-.background {
-  /* background-image: url('@/assets/Gaivota3_0.png'); */
-  background-color: #13284a;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+#app.layout-wrapper {
+  display: flex;
   min-height: 100vh;
+}
+
+.sidebar {
+  width: 60px;
+  background-color: #0d1b2a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 20px;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+}
+
+.info-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #8ecae6;
+  cursor: pointer;
+}
+
+.info-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.info-button:hover {
+  color: white;
+}
+
+.main-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
   padding: 2rem;
-  color: black; 
+}
+
+.footer {
+  padding: 16px;
+  background-color: #0d1b2a;
+  color: white;
+  text-align: center;
+  font-size: 14px;
 }
 </style>
-
