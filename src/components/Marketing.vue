@@ -10,8 +10,11 @@
       </button>
     </form>
 
-    <div class="consulta-info">
-      Os resultados das consultas são baseados nas políticas de crédito da GP e nos dados dos principais bureaus de crédito e inteligência artificial do mercado.
+    <div class="consulta-info with-icon">
+      <img src="@/assets/Verify-icon.png" alt="Verificado" class="icon-verificado" />
+      <span>
+        Os resultados das consultas são baseados nas políticas de crédito da GP e nos dados dos principais bureaus de crédito e inteligência artificial do mercado.
+      </span>
     </div>
 
     <div v-if="error" class="error">{{ error }}</div>
@@ -184,13 +187,21 @@ button:disabled {
   font-size: 14px;
 }
 
-.consulta-info {
+.consulta-info.with-icon {
   margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background-color: #1b263b;
   color: #8ecae6;
   padding: 12px;
   border-radius: 8px;
   font-size: 14px;
+}
+
+.icon-verificado {
+  width: 70px;
+  height: 70px;
 }
 
 .footer {
