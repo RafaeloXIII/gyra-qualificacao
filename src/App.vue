@@ -44,7 +44,7 @@ export default {
 <style>
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background-image: linear-gradient(to right, #21364b, #13284a);
 }
 
@@ -96,11 +96,5 @@ body {
   padding: 2rem;
 }
 
-.footer {
-  padding: 16px;
-  background-color: #0d1b2a;
-  color: white;
-  text-align: center;
-  font-size: 14px;
-}
+
 </style>

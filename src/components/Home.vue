@@ -24,26 +24,19 @@ export default {
 </script>
 
 <style scoped>
-.home-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 24px;
-  background-color: #131a2a;
-  color: #8ecae6;
-  text-align: center;
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
-}
+
 
 h1 {
   font-size: 45px;
   color: white;
   margin-bottom: 16px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .subtitle {
   color: white;
   font-size: 18px;
+  text-align: center;
   margin-bottom: 32px;
 }
 
@@ -63,6 +56,7 @@ h1 {
   padding: 20px;
   border-radius: 10px;
   text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
   font-size: 20px;
   transition: background-color 0.3s ease;
 }
@@ -76,10 +70,4 @@ h1 {
   font-weight: 500;
 }
 
-.footer {
-  margin-top: 48px;
-  font-size: 15px;
-  color: white;
-  font-family: 'Roboto', sans-serif;
-}
 </style>
