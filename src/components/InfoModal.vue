@@ -75,6 +75,7 @@ export default {
   max-width: 600px;
   width: 90%;
   font-family: 'Montserrat', sans-serif;
+  /* font-family: 'Montserrat', sans-serif; */
 }
 
 .modal-content h2 {

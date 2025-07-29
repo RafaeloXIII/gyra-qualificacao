@@ -103,9 +103,7 @@ methods: {
 
       console.log("📦 Relatório completo:", fullReport.data);
       this.report = fullReport.data;
-      // 👇 Pega o status principal
       this.mainStatus = fullReport.data.status?.value || 'Sem status';
-          // ✅ Extrai todas as regras da política a partir do JSON aninhado
       const sections = fullReport.data.sections || [];
       const extractedRules = [];
       let risks = new Set();
@@ -146,93 +144,4 @@ methods: {
 };
 
 </script>
-
-<style scoped>
-
-input {
-  display: block;
-  width: 97%;
-  margin-bottom: 12px;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 6px;
-}
-
-.home-container {
-  max-width: 600px;
-  color: #8ecae6;
-  margin: auto;
-  padding: 24px;
-  background-color: #0d1b2a; /* azul escuro */
-  padding: 40px;
-  border-radius: 12px;
-}
-
-.home-container h2 {
-  font-size: 45px;
-  color: white;
-}
-
-.home-container h3 {
-  font-size: 25px;
-  color: white;
-}
-
-.home-container li,
-.home-container p {
-  color: #8ecae6; 
-}
-
-button {
-  padding: 10px 18px;
-  font-size: 16px;
-  background-color: #0072ff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-button:disabled {
-  background-color: #aaa;
-}
-
-.consulta-info.with-icon {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: #1b263b;
-  color: #8ecae6;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.icon-verificado {
-  width: 70px;
-  height: 70px;
-}
-
-.error {
-  margin-top: 12px;
-  color: red;
-}
-
-.resultado {
-  margin-top: 24px;
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-
-.footer {
-  margin-top: 40px;
-  font-size: 13px;
-  text-align: center;
-  color: #8ecae6;
-}
-</style>
+<style src="@/assets/styles/credito.css"></style>
