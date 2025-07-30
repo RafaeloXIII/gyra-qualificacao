@@ -45,7 +45,7 @@ export default {
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
-  background-image: linear-gradient(to right, #21364b, #13284a);
+  background-image: linear-gradient(to bottom, #21364b, #13284a);
 }
 
 #app.layout-wrapper {

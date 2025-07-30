@@ -8,14 +8,18 @@ body {
 }
 
 .home-container {
+  width: 40%;
+  color: #8ecae6;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0;
   padding: 40px 24px;
-  background-color: #131a2a;
+  background-color: rgba(7, 15, 23, 0.25); 
   text-align: center;
   border-radius: 12px;
   font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
+
 
 .footer {
   height: 45px;
@@ -40,7 +44,3 @@ body {
   gap: 12px;
 }
 
-.icon-verificado {
-  width: 36px;
-  height: 36px;
-}

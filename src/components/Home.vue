@@ -1,18 +1,20 @@
 <template>
-  <div class="home-container">
-    <h1>Motor de Crédito 2025</h1>
-    <p class="subtitle">
-      Tempo médio de 30 segundos:
-    </p>
+  <div class="center-layout">
+    <div class="home-container home-center">
+      <h1>Motor de Crédito 2025</h1>
+      <p class="subtitle">
+        Tempo médio de 30 segundos:
+      </p>
 
-    <div class="link-grid">
-      <router-link to="/motorcredito/credito" class="link-box">
-        📊 <span>Report - Análise de Crédito</span>
-      </router-link>
+      <div class="link-grid">
+        <router-link to="/motorcredito/credito" class="link-box">
+          📊 <span>Report - Análise de Crédito</span>
+        </router-link>
 
-      <router-link to="/motorcredito/marketing" class="link-box">
-        📣 <span>Área do Marketing</span>
-      </router-link>
+        <router-link to="/motorcredito/marketing" class="link-box">
+          📣 <span>Área do Marketing</span>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +35,11 @@ h1 {
   font-family: 'Montserrat', sans-serif;
 }
 
+.center-layout {
+  display: flex;
+  justify-content: center;
+}
+
 .subtitle {
   color: white;
   font-size: 18px;
@@ -51,7 +58,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: #1b263b;
+  background-color: #111b2e8c;
   color: white;
   padding: 20px;
   border-radius: 10px;
