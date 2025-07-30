@@ -1,34 +1,38 @@
 <template>
-  <div class="home-container">
-    <h2>Consulta de Cliente</h2>
+  <div class="duplo-layout">
+    <!-- FORMULÁRIO PRINCIPAL -->
+    <div class="home-container">
+      <h2>Consulta de Cliente</h2>
 
-    <form @submit.prevent="handleCNPJSearch">
-      <input v-model="cnpj" id="cnpj" placeholder="Digite o CNPJ" required />
+      <form @submit.prevent="handleCNPJSearch">
+        <input v-model="cnpj" id="cnpj" placeholder="Digite o CNPJ" required />
 
-      <button type="submit" :disabled="loading">
-        {{ loading ? "Consultando..." : "Consultar" }}
-      </button>
-    </form>
+        <button type="submit" :disabled="loading">
+          {{ loading ? "Consultando..." : "Consultar" }}
+        </button>
+      </form>
 
-    <div class="consulta-info with-icon">
-      <img src="@/assets/Verify-icon.png" alt="Verificado" class="icon-verificado" />
-      <span>
-        Os resultados das consultas são baseados nas políticas de crédito da GP e nos dados dos principais bureaus de crédito e inteligência artificial do mercado.
-      </span>
+      <div class="consulta-info with-icon">
+        <img src="@/assets/Verify-icon.png" alt="Verificado" class="icon-verificado" />
+        <span>
+          Os resultados das consultas são baseados nas políticas de crédito da GP e nos dados dos principais bureaus de crédito e inteligência artificial do mercado.
+        </span>
+      </div>
+
+      <div v-if="error" class="error">{{ error }}</div>
     </div>
 
-    <div v-if="error" class="error">{{ error }}</div>
 
-    <div v-if="mainStatus">
-      <h3>Status Geral: {{ translateStatus(mainStatus) }}</h3>
-    </div>
-    <div v-if="riskInfo.length">
-      <strong>Detalhes:</strong>
-      <ul>
-        <li v-for="(risk, index) in riskInfo" :key="index">
-           {{ risk }}
-        </li>
-      </ul>
+    <div class="info-panel" v-if="mainStatus || riskInfo.length || policySummaries.length">
+      <h3>Status Geral:</h3>
+      <p><strong>{{ translateStatus(mainStatus) }}</strong></p>
+
+      <div v-if="riskInfo.length">
+        <h4>Detalhes de Risco:</h4>
+        <ul>
+          <li v-for="(risk, index) in riskInfo" :key="index"> {{ risk }}</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -51,19 +55,23 @@ data() {
 },
 methods: {
 
-    translateStatus(status) {
+  translateStatus(status) {
     const map = {
       APPROVED: 'Aprovado',
       REJECTED: 'Rejeitado',
       ALERT: 'Alerta',
       DENIED: 'Negado',
-      PENDING: 'Pendente',
+      PENDING: 'Pendente, pressione "CONSULTAR" novamente em 30 segundos',
       NOT_EXECUTED: 'Não Processado',
       '': 'Desconhecido'
     };
     return map[status?.toUpperCase()] || status;
   },
 
+  cleanDescription(text) {
+  if (!text) return '';
+  return text.replace(/\{\{.*?\}\}/g, '').trim();
+  },
   async handleCNPJSearch() {
     this.loading = true;
     this.error = '';
@@ -92,9 +100,7 @@ methods: {
 
       console.log("📦 Relatório completo:", fullReport.data);
       this.report = fullReport.data;
-      // 👇 Pega o status principal
       this.mainStatus = fullReport.data.status?.value || 'Sem status';
-          // ✅ Extrai todas as regras da política a partir do JSON aninhado
       const sections = fullReport.data.sections || [];
       const extractedRules = [];
       let risks = new Set();
@@ -106,6 +112,19 @@ methods: {
           if (values.risk) {
             risks.add(values.risk);
           }
+
+          (values.policyRuleGroupResults || []).forEach(group => {
+            (group.policyRuleResultJoins || []).forEach(join => {
+              (join.policyRuleResults || []).forEach(rule => {
+                if (rule.status?.key === 'DENIED' || rule.status?.key === 'ALERT'){
+                  extractedRules.push({
+                    description: rule.descriptions,
+                    status: rule.status?.value
+                  });
+                }
+              });
+            });
+          });
         });
       });
 

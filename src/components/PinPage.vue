@@ -36,11 +36,14 @@ export default {
   max-width: 400px;
   margin: auto;
   padding: 40px;
-  background-color: #0d1b2a;
+  background-color: rgba(7, 15, 23, 0.25);
   color: white;
   border-radius: 12px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
+
+
 input {
   padding: 10px;
   font-size: 18px;
