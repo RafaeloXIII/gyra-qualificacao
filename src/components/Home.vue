@@ -11,6 +11,10 @@
           📊 <span>Report - Análise de Crédito</span>
         </router-link>
 
+        <router-link class="link-box" to="/motorcredito/listarreport">
+          📄 <span> Listar Relatórios</span>
+        </router-link>
+
         <router-link to="/motorcredito/marketing" class="link-box">
           📣 <span>Área do Marketing</span>
         </router-link>

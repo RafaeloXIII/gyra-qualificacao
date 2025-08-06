@@ -18,11 +18,13 @@ export default {
   },
   methods: {
     validatePin() {
-  if (this.pin === 'Creditogp@123') {
+  if (this.pin === '') {
         const expiresAt = Date.now() + 12 * 60 * 60 * 1000;
         localStorage.setItem('accessGranted', 'true');
         localStorage.setItem('accessExpiresAt', expiresAt.toString());
-        this.$router.push('/motorcredito/credito');
+        const redirectPath = localStorage.getItem('redirectAfterPin') || '/motorcredito';
+        localStorage.removeItem('redirectAfterPin');
+        this.$router.push(redirectPath);
     } else {
         this.error = 'PIN inválido';
     }
