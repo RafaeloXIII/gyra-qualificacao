@@ -78,11 +78,11 @@ methods: {
     this.report = null;
 
     try {
-      const tokenRes = await axios.post('http://192.168.87.87:3001/api/token');
+      const tokenRes = await axios.post('http://localhost:3001/api/token');
       console.log('🟢 Token received:', tokenRes.data);
       const token = tokenRes.data.token;
 
-      const reportRes = await axios.post('http://192.168.87.87:3001/api/report', {
+      const reportRes = await axios.post('http://localhost:3001/api/report', {
         token,
         cnpj: this.cnpj,
         policyId: process.env.VUE_APP_GYRA_POLICY_ID
@@ -92,7 +92,7 @@ methods: {
       const reportId = reportRes.data.id || reportRes.data.reportId;
 
       const fullReport = await axios.get(
-        `http://192.168.87.87:3001/api/report/${reportId}`,
+        `http://localhost:3001/api/report/${reportId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
