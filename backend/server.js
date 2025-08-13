@@ -94,7 +94,7 @@ app.get('/api/report/:id', async (req, res) => {
 app.get('/api/reports', async (req, res) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT id, cnpj, report_id, sector, created_at FROM cnpj_reports ORDER BY created_at DESC'
+      'SELECT id, cnpj, report_id, sector, created_at FROM cnpj_reports WHERE created_at > NOW() - INTERVAL 90 DAY ORDER BY created_at DESC'
     );
     res.json(rows);
   } catch (err) {
@@ -106,7 +106,7 @@ app.get('/api/reports', async (req, res) => {
 import * as XLSX from 'xlsx'
 app.get('/api/reports.xlsx', async (req, res) => {
   try {
-    const [rows] = await pool.execute('SELECT cnpj, report_id, sector, created_at FROM cnpj_reports ORDER BY created_at DESC')
+    const [rows] = await pool.execute('SELECT id, cnpj, report_id, sector, created_at FROM cnpj_reports WHERE created_at > NOW() - INTERVAL 90 DAY ORDER BY created_at DESC')
 
     const data = rows.map(r => ({
       CNPJ: r.cnpj,
@@ -129,7 +129,7 @@ app.get('/api/reports.xlsx', async (req, res) => {
   }
 })
 
-// 💡 encerra pool com elegância
+// 💡 encerra pool
 const shutdown = async () => {
   try {
     await pool.end();
