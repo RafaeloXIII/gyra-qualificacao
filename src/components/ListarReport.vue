@@ -2,11 +2,14 @@
   <div class="duplo-layout">
     <div class="home-container">
       <h2>Relatórios Salvos</h2>
+      <button :disabled="loadingExport" class="report-button" @click="downloadXLSX">
+      {{ loadingExport ? 'Exportando...' : 'Exportar XLSX' }}
+      </button>
       <ul class="report-list">
         <li v-for="report in reports" :key="report.id">
             <button @click="loadReport(report.report_id)" class="report-button" :class="{ 'report-button--active': selectedReportId === report.report_id }">
                 <strong>CNPJ:</strong> {{ report.cnpj }}<br />
-                <strong>ID:</strong> {{ report.report_id }}<br />
+                <strong>Setor:</strong> {{ report.sector || '—' }}<br/>
                 <small>{{ formatDate(report.created_at) }}</small>
             </button>
         </li>
@@ -51,10 +54,41 @@ data() {
         lastRequestTime: null, // ⏱️ controle da última consulta
         cooldownSeconds: 1,
         selectedReportId: null,
-        loadingReport: false
+        loadingReport: false,
+        loadingEsport:false
     };
 },
   methods: {
+    async downloadXLSX() {
+    try {
+      this.loadingExport = true;
+
+      // Use o IP/host do seu backend
+      const resp = await fetch('http://localhost:3001/api/reports.xlsx', {
+        method: 'GET',
+        // Se precisar cookies/credenciais, adicione: credentials: 'include'
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // Nome de arquivo amigável
+      const stamp = new Date().toISOString().slice(0,10);
+      a.download = `relatorios_${stamp}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Erro ao baixar XLSX:', e);
+      alert('Falha ao exportar XLSX.');
+    } finally {
+      this.loadingExport = false;
+    }
+  },
+
     async loadReports() {
       const res = await axios.get('http://localhost:3001/api/reports');
       this.reports = res.data;

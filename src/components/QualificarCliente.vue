@@ -93,7 +93,8 @@ methods: {
       const reportRes = await axios.post('http://localhost:3001/api/report', {
         token,
         cnpj: this.cnpj,
-        policyId: process.env.VUE_APP_GYRA_POLICY_ID
+        policyId: process.env.VUE_APP_GYRA_POLICY_ID,
+        sector: 'CRDT'
       });
 
       console.log('📄 Report created:', reportRes.data);
