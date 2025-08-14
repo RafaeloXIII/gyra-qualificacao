@@ -7,19 +7,19 @@ import ListarReport from '@/components/ListarReport.vue' // ✅ novo import
 
 const routes = [
   { path: '/motorcredito', component: Home },
-  { path: '/motorcredito/pin', component: PinPage },
+  { path: '/pin', component: PinPage },
   {
-    path: '/motorcredito/credito',
+    path: '/credito',
     component: QualificarCliente,
     meta: { requiresAuth: true }
   },
   {
-    path: '/motorcredito/marketing',
+    path: '/marketing',
     component: Marketing,
     meta: { requiresAuth: false }
   },
   {
-    path: '/motorcredito/listarreport',
+    path: '/listarreport',
     component: ListarReport,
     meta: { requiresAuth: true }
   },
@@ -41,6 +41,7 @@ router.beforeEach((to, from, next) => {
     if (granted === 'true' && expiresAt && now < expiresAt) {
       next();
     } else {
+      localStorage.setItem('redirectAfterPin', to.fullPath);
       localStorage.removeItem('accessGranted');
       localStorage.removeItem('accessExpiresAt');
       next('/motorcredito/pin');

@@ -64,7 +64,7 @@ data() {
       this.loadingExport = true;
 
       // Use o IP/host do seu backend
-      const resp = await fetch('http://localhost:3001/api/reports.xlsx', {
+      const resp = await fetch('http://192.168.87.87:3001/api/reports.xlsx', {
         method: 'GET',
         // Se precisar cookies/credenciais, adicione: credentials: 'include'
       });
@@ -90,7 +90,7 @@ data() {
   },
 
     async loadReports() {
-      const res = await axios.get('http://localhost:3001/api/reports');
+      const res = await axios.get('http://192.168.87.87:3001/api/reports');
       this.reports = res.data;
     },
 
@@ -109,10 +109,10 @@ data() {
     this.loadingReport = true; 
 
     try {
-        const tokenRes = await axios.post('http://localhost:3001/api/token');
+        const tokenRes = await axios.post('http://192.168.87.87:3001/api/token');
         const token = tokenRes.data.token;
 
-        const res = await axios.get(`http://localhost:3001/api/report/${id}`, {
+        const res = await axios.get(`http://192.168.87.87:3001/api/report/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
         });
 

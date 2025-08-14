@@ -7,15 +7,15 @@
       </p>
 
       <div class="link-grid">
-        <router-link to="/motorcredito/credito" class="link-box">
+        <router-link to="/credito" class="link-box">
           📊 <span>Report - Análise de Crédito</span>
         </router-link>
 
-        <router-link class="link-box" to="/motorcredito/listarreport">
+        <router-link class="link-box" to="/listarreport">
           📄 <span> Listar Relatórios</span>
         </router-link>
 
-        <router-link to="/motorcredito/marketing" class="link-box">
+        <router-link to="/marketing" class="link-box">
           📣 <span>Área do Marketing</span>
         </router-link>
       </div>

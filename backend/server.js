@@ -9,6 +9,45 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+function extractReportSummary(report) {
+  const statusValue = report?.status?.value || null;
+
+  const riskSet = new Set();
+  const rules = [];
+  const sections = report?.sections || [];
+
+  sections.forEach(section => {
+    (section.sectionDetails || []).forEach(detail => {
+      const values = detail?.values || {};
+
+      if (values.risk) {
+        riskSet.add(values.risk);
+      }
+
+      (values.policyRuleGroupResults || []).forEach(group => {
+        (group.policyRuleResultJoins || []).forEach(join => {
+          (join.policyRuleResults || []).forEach(rule => {
+            const key = rule?.status?.key;
+            if (key === 'ALERT' || key === 'DENIED') {
+              const rawDesc = rule?.descriptions || '';
+              const cleanDescription = rawDesc.replace(/\{\{.*?\}\}/g, '').trim();
+              rules.push({
+                description: cleanDescription,
+                status: rule?.status?.value || ''
+              });
+            }
+          });
+        });
+      });
+    });
+  });
+
+  return {
+    statusValue,
+    risks: Array.from(riskSet),
+    rules
+  };
+}
 // 🔐 Token
 app.post('/api/token', async (req, res) => {
   try {
@@ -79,16 +118,60 @@ app.get('/api/report/:id', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     const reportId = req.params.id;
-    const resp = await axios.get(
+
+    // 1) Opcional: checar se já está preenchido (evita UPDATE desnecessário)
+    const [rows] = await pool.execute(
+      'SELECT status_value FROM cnpj_reports WHERE report_id = ? LIMIT 1',
+      [reportId]
+    );
+    const currentStatus = rows.length ? (rows[0].status_value || '').trim() : '';
+    const isEmpty = currentStatus === '';
+    const isPending = currentStatus.toUpperCase() === 'PENDING';
+    const updateNeeded = isEmpty || isPending;
+
+    // 2) Sempre busca relatório completo na Gyra+ (precisamos retornar ao front)
+    const response = await axios.get(
       `https://gyra-core.gyramais.com.br/report/${reportId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    res.json(resp.data);
+    const fullReport = response.data;
+
+    // 3) Só extrai e tenta atualizar se ainda estiver vazio
+    if (updateNeeded) {
+      const { statusValue, risks, rules } = extractReportSummary(fullReport);
+
+      try {
+        await pool.execute(
+          `UPDATE cnpj_reports
+              SET status_value = ?,
+                  risks = ?,
+                  rules = ?
+            WHERE report_id = ?
+              AND (
+                    status_value IS NULL
+                 OR status_value = ''
+                 OR UPPER(status_value) = 'PENDING'
+              )`,
+          [
+            statusValue || null,
+            JSON.stringify(risks || []),
+            JSON.stringify(rules || []),
+            reportId
+          ]
+        );
+      } catch (dbErr) {
+        console.warn('⚠️ Falha ao atualizar resumo no banco:', dbErr.message);
+      }
+    }
+
+    // 4) Retorna o relatório completo
+    res.json(fullReport);
   } catch (err) {
-    console.error('❌ /api/report/:id', err.response?.data || err.message);
+    console.error('❌ /api/report/:id:', err.response?.data || err.message);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // 📃 Lista ids salvos
 app.get('/api/reports', async (req, res) => {
@@ -106,12 +189,15 @@ app.get('/api/reports', async (req, res) => {
 import * as XLSX from 'xlsx'
 app.get('/api/reports.xlsx', async (req, res) => {
   try {
-    const [rows] = await pool.execute('SELECT id, cnpj, report_id, sector, created_at FROM cnpj_reports WHERE created_at > NOW() - INTERVAL 90 DAY ORDER BY created_at DESC')
+    const [rows] = await pool.execute('SELECT id, cnpj, report_id, sector, status_value, risks, rules, created_at FROM cnpj_reports WHERE created_at > NOW() - INTERVAL 90 DAY ORDER BY created_at DESC')
 
     const data = rows.map(r => ({
       CNPJ: r.cnpj,
       ReportID: r.report_id,
       Setor: r.sector || '',
+      Status: r.status_value,
+      Riscos: r.risks,
+      Regras: r.rules,
       CriadoEm: new Date(r.created_at).toISOString()
     }))
 
