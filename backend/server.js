@@ -139,7 +139,7 @@ app.get('/api/report/:id', async (req, res) => {
     // 3) Só extrai e tenta atualizar se ainda estiver vazio
     if (updateNeeded) {
       const { statusValue, risks, rules } = extractReportSummary(fullReport);
-
+      const rulesToStore = (rules || []).map(r => r.description);
       try {
         await pool.execute(
           `UPDATE cnpj_reports
@@ -155,7 +155,7 @@ app.get('/api/report/:id', async (req, res) => {
           [
             statusValue || null,
             JSON.stringify(risks || []),
-            JSON.stringify(rules || []),
+            JSON.stringify(rulesToStore),
             reportId
           ]
         );
